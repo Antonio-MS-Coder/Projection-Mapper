@@ -37,7 +37,7 @@ export interface Geometry {
   visible: boolean;
 }
 
-export type LayerType = 'image' | 'video' | 'shader' | 'color';
+export type LayerType = 'image' | 'video' | 'shader' | 'color' | 'pattern';
 export type BlendMode = 'normal' | 'add' | 'multiply' | 'screen';
 
 export interface LayerBase {
@@ -79,7 +79,24 @@ export interface ShaderLayer extends LayerBase {
   uniforms: Record<string, any>;
 }
 
-export type Layer = ImageLayer | VideoLayer | ColorLayer | ShaderLayer;
+export interface PatternLayer extends LayerBase {
+  type: 'pattern';
+  patternId: string;
+  patternConfig: {
+    colors: string[];
+    speed?: number;
+    intensity?: number;
+    direction?: string;
+    frequency?: number;
+    borderWidth?: number;
+    fillOpacity?: number;
+    strokeDashArray?: string;
+  };
+  isAnimated: boolean;
+  isPlaying: boolean;
+}
+
+export type Layer = ImageLayer | VideoLayer | ColorLayer | ShaderLayer | PatternLayer;
 
 export interface GlobalSettings {
   intensity: number; // 0.0 - 1.0

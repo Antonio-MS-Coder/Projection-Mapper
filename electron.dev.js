@@ -11,7 +11,8 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'dist/main/preload.js')
+      // Preload will be compiled when needed
+      // preload: path.join(__dirname, 'dist/main/preload.js')
     }
   });
 

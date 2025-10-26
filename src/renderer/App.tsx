@@ -12,6 +12,7 @@ import { ControlPanel } from './components/ControlPanel';
 import { Toolbar } from './components/Toolbar';
 import { DisplaySelector } from './components/DisplaySelector';
 import { CalibrationOverlay } from './components/CalibrationOverlay';
+import { LightPatternSelector } from './components/LightPatterns';
 import './styles/app.css';
 
 const darkTheme = createTheme({
@@ -52,6 +53,7 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [calibrationMode, setCalibrationMode] = React.useState(false);
   const [playing, setPlaying] = React.useState(false);
+  const [selectedPattern, setSelectedPattern] = React.useState<any>(null);
 
   // Enable auto-save
   useAutoSave({
@@ -250,6 +252,20 @@ function App() {
               >
                 <LayerPanel />
               </SortableContext>
+              <LightPatternSelector
+                selectedPattern={selectedPattern}
+                onPatternSelect={setSelectedPattern}
+                onConfigChange={(config) => {
+                  if (selectedLayerId && selectedPattern) {
+                    const layer = project.layers.find(l => l.id === selectedLayerId);
+                    if (layer && layer.type === 'pattern') {
+                      useProjectStore.getState().updateLayer(selectedLayerId, {
+                        patternConfig: { ...layer.patternConfig, ...config }
+                      });
+                    }
+                  }
+                }}
+              />
               <ControlPanel />
             </div>
           </div>

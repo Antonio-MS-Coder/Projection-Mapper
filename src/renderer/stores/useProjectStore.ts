@@ -258,6 +258,20 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           uniforms: {},
         } as Layer;
         break;
+      case 'pattern':
+        layer = {
+          ...baseLayer,
+          type: 'pattern',
+          patternId: 'solid',
+          patternConfig: {
+            colors: ['#00ff88'],
+            fillOpacity: 1,
+            borderWidth: 0,
+          },
+          isAnimated: false,
+          isPlaying: true,
+        } as Layer;
+        break;
       default:
         throw new Error(`Unknown layer type: ${type}`);
     }

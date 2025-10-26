@@ -22,6 +22,7 @@ import {
   Movie,
   Palette,
   Code,
+  AutoAwesome,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
@@ -59,6 +60,8 @@ const LayerItem: React.FC<{ layer: Layer }> = ({ layer }) => {
         return <Palette />;
       case 'shader':
         return <Code />;
+      case 'pattern':
+        return <AutoAwesome />;
       default:
         return null;
     }
@@ -219,30 +222,41 @@ export const LayerPanel: React.FC = () => {
         Layers
       </Typography>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+      <Stack spacing={1} sx={{ mb: 2 }}>
+        <Stack direction="row" spacing={1}>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<Image />}
+            onClick={() => handleAddLayer('image')}
+          >
+            Image
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<Movie />}
+            onClick={() => handleAddLayer('video')}
+          >
+            Video
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<Palette />}
+            onClick={() => handleAddLayer('color')}
+          >
+            Color
+          </Button>
+        </Stack>
         <Button
           size="small"
-          variant="outlined"
-          startIcon={<Image />}
-          onClick={() => handleAddLayer('image')}
+          variant="contained"
+          startIcon={<AutoAwesome />}
+          onClick={() => handleAddLayer('pattern')}
+          sx={{ backgroundColor: 'primary.dark' }}
         >
-          Image
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<Movie />}
-          onClick={() => handleAddLayer('video')}
-        >
-          Video
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<Palette />}
-          onClick={() => handleAddLayer('color')}
-        >
-          Color
+          Light Pattern
         </Button>
       </Stack>
 
