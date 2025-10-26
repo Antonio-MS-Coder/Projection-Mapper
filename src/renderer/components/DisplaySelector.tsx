@@ -10,13 +10,31 @@ import {
   Button,
   Stack,
   Chip,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
-import { Monitor, DesktopWindows } from '@mui/icons-material';
+import { Monitor, DesktopWindows, Refresh, Videocam } from '@mui/icons-material';
 import { useProjectStore } from '../stores/useProjectStore';
 
 export const DisplaySelector: React.FC = () => {
-  const { displays, outputDisplay, selectOutputDisplay, project } = useProjectStore();
+  const { displays, outputDisplay, selectOutputDisplay, project, setDisplays } = useProjectStore();
   const [selectedDisplayId, setSelectedDisplayId] = React.useState<string>('');
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const refreshDisplays = async () => {
+    setIsLoading(true);
+    if (window.electronAPI) {
+      const newDisplays = await window.electronAPI.getDisplays();
+      setDisplays(newDisplays);
+      console.log('Refreshed displays:', newDisplays);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    // Load displays on mount
+    refreshDisplays();
+  }, []);
 
   useEffect(() => {
     if (project.global.outputDisplayId) {
@@ -44,9 +62,16 @@ export const DisplaySelector: React.FC = () => {
 
   return (
     <Paper sx={{ p: 2, m: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        Output Display
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h6">
+          Output Display
+        </Typography>
+        <Tooltip title="Refresh displays">
+          <IconButton onClick={refreshDisplays} disabled={isLoading} size="small">
+            <Refresh />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
       <Stack spacing={2}>
         <FormControl fullWidth size="small">
@@ -59,17 +84,19 @@ export const DisplaySelector: React.FC = () => {
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {displays.map((display) => (
-              <MenuItem key={display.id} value={display.id}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  {display.isInternal ? <Monitor /> : <DesktopWindows />}
-                  <Typography>
-                    {display.name} ({display.bounds.width}x{display.bounds.height})
-                  </Typography>
-                  {display.isPrimary && <Chip label="Primary" size="small" />}
-                </Stack>
-              </MenuItem>
-            ))}
+            {displays.map((display) => {
+              const isProjector = !display.isInternal && !display.isPrimary;
+              return (
+                <MenuItem key={display.id} value={display.id}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {display.isInternal ? <Monitor /> : isProjector ? <Videocam /> : <DesktopWindows />}
+                    <Typography>{display.name}</Typography>
+                    {display.isPrimary && <Chip label="Primary" size="small" color="primary" />}
+                    {isProjector && <Chip label="Projector" size="small" color="secondary" />}
+                  </Stack>
+                </MenuItem>
+              );
+            })}
           </Select>
         </FormControl>
 

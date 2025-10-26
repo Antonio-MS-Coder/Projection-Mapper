@@ -8,6 +8,7 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  Divider,
 } from '@mui/material';
 import {
   PlayArrow,
@@ -21,6 +22,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import { useProjectStore } from '../stores/useProjectStore';
+import { TestPatterns } from './TestPatterns';
 
 interface ToolbarProps {
   onCalibrate: () => void;
@@ -30,6 +32,7 @@ interface ToolbarProps {
 export const Toolbar: React.FC<ToolbarProps> = ({ onCalibrate, calibrationMode }) => {
   const { project, isDirty, addGeometry, addLayer } = useProjectStore();
   const [playing, setPlaying] = React.useState(false);
+  const [activeTestPattern, setActiveTestPattern] = React.useState<string | null>(null);
 
   const handlePlayPause = () => {
     setPlaying(!playing);
@@ -108,6 +111,18 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onCalibrate, calibrationMode }
               </Tooltip>
             </ToggleButton>
           </ToggleButtonGroup>
+
+          {calibrationMode && (
+            <>
+              <Box sx={{ width: 1, height: 24, backgroundColor: 'divider', mx: 1 }} />
+              <TestPatterns
+                onPatternSelect={setActiveTestPattern}
+                activePattern={activeTestPattern}
+              />
+            </>
+          )}
+
+          <Box sx={{ width: 1, height: 24, backgroundColor: 'divider', mx: 1 }} />
 
           <Tooltip title="Fullscreen Output">
             <IconButton onClick={handleFullscreen} size="small">

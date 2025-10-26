@@ -1,0 +1,11 @@
+appId: com.opensource.projectionmapper.dev
+productName: Projection Mapper Dev
+directories:
+  output: dist-dev
+files:
+  - dist/**/*
+  - node_modules/**/*
+  - package.json
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

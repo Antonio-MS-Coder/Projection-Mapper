@@ -194,13 +194,45 @@ function createMenu() {
 // IPC Handlers
 ipcMain.handle('app:getDisplays', (): Display[] => {
   const displays = screen.getAllDisplays();
-  return displays.map(d => ({
-    id: d.id.toString(),
-    name: `Display ${d.id}`,
-    bounds: d.bounds,
-    isPrimary: d.id === screen.getPrimaryDisplay().id,
-    isInternal: d.internal || false,
-  }));
+  const primaryDisplay = screen.getPrimaryDisplay();
+
+  console.log('Detected displays:', displays.length);
+  displays.forEach(d => {
+    console.log(`Display ${d.id}:`, {
+      bounds: d.bounds,
+      scaleFactor: d.scaleFactor,
+      rotation: d.rotation,
+      internal: d.internal,
+    });
+  });
+
+  return displays.map((d, index) => {
+    const isPrimary = d.id === primaryDisplay.id;
+    const isInternal = d.internal === true;
+
+    // Better naming for displays
+    let name = '';
+    if (isPrimary && isInternal) {
+      name = 'Built-in Display';
+    } else if (isInternal) {
+      name = `Internal Display ${index + 1}`;
+    } else if (isPrimary) {
+      name = 'Primary External Display';
+    } else {
+      name = `External Display ${index + 1}`;
+    }
+
+    // Add resolution to name
+    name += ` (${d.bounds.width}x${d.bounds.height})`;
+
+    return {
+      id: d.id.toString(),
+      name,
+      bounds: d.bounds,
+      isPrimary,
+      isInternal,
+    };
+  });
 });
 
 ipcMain.handle('app:selectOutputDisplay', (_event, displayId: string) => {

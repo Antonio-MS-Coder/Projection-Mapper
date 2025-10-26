@@ -3,6 +3,8 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useProjectStore } from './stores/useProjectStore';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useAutoSave } from './hooks/useAutoSave';
 import { MainLayout } from './components/MainLayout';
 import { Canvas } from './components/Canvas';
 import { LayerPanel } from './components/LayerPanel';
@@ -49,6 +51,43 @@ function App() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [calibrationMode, setCalibrationMode] = React.useState(false);
+  const [playing, setPlaying] = React.useState(false);
+
+  // Enable auto-save
+  useAutoSave({
+    enabled: true,
+    interval: 30000, // Save every 30 seconds
+  });
+
+  // Setup keyboard shortcuts
+  useKeyboardShortcuts({
+    onToggleCalibration: () => setCalibrationMode(!calibrationMode),
+    onTogglePlayback: () => {
+      setPlaying(!playing);
+      // Update video layers
+      project.layers.forEach((layer) => {
+        if (layer.type === 'video') {
+          useProjectStore.getState().updateLayer(layer.id, { playing: !playing });
+        }
+      });
+    },
+    onSaveProject: () => saveProject(),
+    onOpenProject: () => {
+      if (window.electronAPI) {
+        window.electronAPI.selectMedia().then((result: any) => {
+          if (!result.canceled && result.filePaths[0]) {
+            loadProjectFile(result.filePaths[0]);
+          }
+        });
+      }
+    },
+    onNewProject: () => {
+      if (confirm('Create new project? Unsaved changes will be lost.')) {
+        useProjectStore.getState().newProject();
+      }
+    },
+    onResetCalibration: () => resetCalibration(),
+  });
 
   useEffect(() => {
     // Load available displays

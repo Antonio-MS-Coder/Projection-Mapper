@@ -1,5 +1,6 @@
 import { mat3, mat4, vec2, vec3 } from 'gl-matrix';
 import { Geometry, Layer, GlobalSettings, QuadPoint, Vec2 } from '@shared/types';
+import { calculateHomography } from '../utils/homography';
 
 export class ProjectionEngine {
   private gl: WebGL2RenderingContext;
@@ -164,42 +165,6 @@ export class ProjectionEngine {
     return shader;
   }
 
-  public calculateHomography(srcPoints: Vec2[], dstPoints: Vec2[]): Float32Array {
-    // Calculate homography matrix using DLT (Direct Linear Transform)
-    // This maps from source quad to destination quad
-
-    const A: number[][] = [];
-
-    for (let i = 0; i < 4; i++) {
-      const src = srcPoints[i];
-      const dst = dstPoints[i];
-
-      A.push([
-        src.x, src.y, 1, 0, 0, 0, -dst.x * src.x, -dst.x * src.y, -dst.x
-      ]);
-      A.push([
-        0, 0, 0, src.x, src.y, 1, -dst.y * src.x, -dst.y * src.y, -dst.y
-      ]);
-    }
-
-    // Solve using SVD (simplified for 4-point case)
-    // In production, use a proper linear algebra library
-    const h = this.solveDLT(A);
-
-    return new Float32Array([
-      h[0], h[3], h[6],
-      h[1], h[4], h[7],
-      h[2], h[5], h[8]
-    ]);
-  }
-
-  private solveDLT(A: number[][]): number[] {
-    // Simplified DLT solver for 4-point homography
-    // This is a placeholder - in production use a proper SVD implementation
-
-    // For now, return identity homography
-    return [1, 0, 0, 0, 1, 0, 0, 0, 1];
-  }
 
   public loadImage(id: string, src: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -366,7 +331,7 @@ export class ProjectionEngine {
       ];
 
       const dstPoints = geometry.points.map(p => p.position);
-      const homography = this.calculateHomography(srcPoints, dstPoints);
+      const homography = calculateHomography(srcPoints, dstPoints);
       gl.uniformMatrix3fv(uHomography, false, homography);
 
       // Set transform matrix
