@@ -196,43 +196,69 @@ ipcMain.handle('app:getDisplays', (): Display[] => {
   const displays = screen.getAllDisplays();
   const primaryDisplay = screen.getPrimaryDisplay();
 
-  console.log('Detected displays:', displays.length);
+  console.log('=== Display Detection ===');
+  console.log('Total displays found:', displays.length);
+  console.log('Primary display ID:', primaryDisplay.id);
+
   displays.forEach(d => {
     console.log(`Display ${d.id}:`, {
       bounds: d.bounds,
       scaleFactor: d.scaleFactor,
       rotation: d.rotation,
       internal: d.internal,
+      id: d.id,
+      displayFrequency: d.displayFrequency,
     });
   });
 
-  return displays.map((d, index) => {
+  // Force refresh display list
+  screen.getAllDisplays(); // Sometimes helps detect new displays
+
+  const mappedDisplays = displays.map((d, index) => {
     const isPrimary = d.id === primaryDisplay.id;
     const isInternal = d.internal === true;
 
     // Better naming for displays
     let name = '';
+
+    // Check if it's likely a projector based on common resolutions
+    const isProjectorResolution =
+      (d.bounds.width === 1920 && d.bounds.height === 1080) ||
+      (d.bounds.width === 1280 && d.bounds.height === 720) ||
+      (d.bounds.width === 1024 && d.bounds.height === 768) ||
+      (d.bounds.width === 800 && d.bounds.height === 600);
+
     if (isPrimary && isInternal) {
       name = 'Built-in Display';
     } else if (isInternal) {
       name = `Internal Display ${index + 1}`;
-    } else if (isPrimary) {
+    } else if (!isPrimary && !isInternal && isProjectorResolution) {
+      name = `Projector ${index}`;
+    } else if (!isPrimary && !isInternal) {
+      name = `External Display ${index}`;
+    } else if (isPrimary && !isInternal) {
       name = 'Primary External Display';
     } else {
-      name = `External Display ${index + 1}`;
+      name = `Display ${index + 1}`;
     }
 
     // Add resolution to name
     name += ` (${d.bounds.width}x${d.bounds.height})`;
 
-    return {
+    const displayInfo = {
       id: d.id.toString(),
       name,
       bounds: d.bounds,
       isPrimary,
       isInternal,
     };
+
+    console.log('Mapped display:', displayInfo);
+    return displayInfo;
   });
+
+  console.log('=== End Display Detection ===');
+  return mappedDisplays;
 });
 
 ipcMain.handle('app:selectOutputDisplay', (_event, displayId: string) => {

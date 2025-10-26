@@ -50,6 +50,8 @@ export interface LayerBase {
   blendMode: BlendMode;
   transform: Transform;
   order: number;
+  groupId?: string; // Optional group membership
+  locked?: boolean; // Lock layer from editing
 }
 
 export interface ImageLayer extends LayerBase {
@@ -98,6 +100,16 @@ export interface PatternLayer extends LayerBase {
 
 export type Layer = ImageLayer | VideoLayer | ColorLayer | ShaderLayer | PatternLayer;
 
+export interface LayerGroup {
+  id: string;
+  name: string;
+  expanded: boolean;
+  visible: boolean;
+  locked: boolean;
+  opacity: number; // Group opacity affects all child layers
+  color?: string; // Visual color coding
+}
+
 export interface GlobalSettings {
   intensity: number; // 0.0 - 1.0
   tint: Color;
@@ -112,6 +124,7 @@ export interface Project {
   modified: string;
   geometries: Geometry[];
   layers: Layer[];
+  groups: LayerGroup[];
   global: GlobalSettings;
 }
 

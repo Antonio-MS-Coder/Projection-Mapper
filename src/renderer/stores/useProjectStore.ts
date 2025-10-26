@@ -71,6 +71,7 @@ const createDefaultProject = (): Project => ({
   modified: new Date().toISOString(),
   geometries: [],
   layers: [],
+  groups: [],
   global: {
     intensity: 1.0,
     tint: { r: 1, g: 1, b: 1 },
