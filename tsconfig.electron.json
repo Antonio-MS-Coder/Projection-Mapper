@@ -3,7 +3,8 @@
   "compilerOptions": {
     "module": "CommonJS",
     "noEmit": false,
-    "outDir": "dist/main"
+    "outDir": "dist",
+    "rootDir": "src"
   },
-  "include": ["src/main/**/*"]
+  "include": ["src/main/**/*", "src/shared/**/*"]
 }

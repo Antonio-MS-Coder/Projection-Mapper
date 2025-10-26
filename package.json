@@ -4,10 +4,10 @@
   "description": "Open-source projection mapping software for artists and creators",
   "main": "dist/main/main.js",
   "scripts": {
-    "dev": "concurrently -k \"npm run dev:vite\" \"npm run dev:electron-simple\"",
+    "dev": "npm run compile && concurrently -k \"npm run dev:vite\" \"npm run dev:electron-watch\"",
     "dev:vite": "vite",
-    "dev:electron-simple": "wait-on http://localhost:3000 && electron electron.dev.js",
-    "dev:electron": "tsc -p tsconfig.electron.json && electron .",
+    "dev:electron-watch": "wait-on http://localhost:3000 && electron electron.dev.js",
+    "dev:electron": "tsc -p tsconfig.electron.json && electron dist/main/main.js",
     "build": "npm run build:react && npm run build:electron",
     "build:react": "vite build",
     "build:electron": "tsc -p tsconfig.electron.json",
@@ -15,7 +15,8 @@
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx",
     "compile": "tsc -p tsconfig.electron.json",
-    "start": "electron ."
+    "start": "npm run compile && electron dist/main/main.js",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "projection-mapping",
