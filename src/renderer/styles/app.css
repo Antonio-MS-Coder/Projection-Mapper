@@ -1,0 +1,89 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 64px); /* Subtract toolbar height */
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.side-panel {
+  width: 380px;
+  background: #0a0a0a;
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar Styling */
+.side-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.side-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.side-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.side-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Electron Window Styles */
+.titlebar {
+  -webkit-app-region: drag;
+  height: 32px;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.titlebar button {
+  -webkit-app-region: no-drag;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
